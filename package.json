@@ -1,5 +1,5 @@
 {
-  "name": "shopify-devserver",
+  "name": "@grafikr/shopify-devserver",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
