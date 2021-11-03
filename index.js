@@ -11,10 +11,12 @@ if (fs.existsSync('./config.yml')) {
 }
 
 const manipulateResponse = (body) => {
+  const liveReload = fs.readFileSync(path.join(__dirname, 'livereload.js'));
   let response = body;
 
   response = response.replace(/\/\/cdn.shopify.com\/s\/files\/[0-9]\/[0-9]*\/[0-9]*\/[0-9]*\/[a-z]\/[0-9]\/assets\/([A-Za-z0-9_.]+)\?(v=)?[0-9]*/g, '/assets/$1');
   response = response.replace('</head>', '<style>#preview-bar-iframe { display: none; }</style></head>');
+  response = response.replace('</head>', `<script>${liveReload}</script></head>`);
 
   return response;
 };
