@@ -17,7 +17,8 @@
     "url": "https://github.com/grafikr/shopify-devserver.git"
   },
   "files": [
-    "index.js"
+    "index.js",
+    "livereload.js"
   ],
   "dependencies": {
     "webpack": "^5.0.0",
