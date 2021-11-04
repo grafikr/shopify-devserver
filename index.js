@@ -29,7 +29,7 @@ module.exports = {
   },
 
   static: {
-    directory: path.join(__dirname, config.development.directory ?? 'src', 'assets/'),
+    directory: path.join(config.development.directory ?? 'src', 'assets/'),
     watch: true,
   },
 
