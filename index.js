@@ -45,7 +45,7 @@ module.exports = {
       onProxyRes: (proxyRes, req, res) => {
         if (req.path.startsWith('/assets/')) {
           try {
-            const filePath = path.join(__dirname, config.development.directory ?? 'src', req.path);
+            const filePath = path.join(config.development.directory ?? 'src', req.path);
             res.end(fs.readFileSync(filePath));
           } catch (e) {
             res.statusCode = 404;
