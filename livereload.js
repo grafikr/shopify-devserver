@@ -1,3 +1,4 @@
+// eslint-disable-next-line func-names
 (function () {
   let previousContent = null;
 
