@@ -11,6 +11,14 @@ module.exports = (env) => {
     config = YAML.parse(config);
   }
 
+  let target;
+  try {
+    target = new URL(config.development.store);
+    target.protocol = 'https';
+  } catch (e) {
+    target = new URL(`https://${config.development.store}`);
+  }
+
   const manipulateResponse = (body) => {
     let response = body;
 
@@ -40,7 +48,7 @@ module.exports = (env) => {
 
     proxy: {
       '**': {
-        target: `https://${config.development.store}`,
+        target,
         secure: false,
         changeOrigin: true,
         selfHandleResponse: true,
