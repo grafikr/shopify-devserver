@@ -17,13 +17,13 @@ In your webpack config file, add the package to the `devServer` attribute. It co
 ```js
 const devServer = require('@grafikr/shopify-devserver');
 
-module.exports = {
+module.exports = (env) => ({
   ...
 
-  devServer,
+  devServer: devServer(env),
 
   ...
-};
+});
 ```
 
 Once this is done, you should be able to run webpack with the serve command.
@@ -33,7 +33,8 @@ For easy integration, you can add it as an action to your scripts in `package.js
 ```json
 {
   "scripts": {
-    "server": "webpack serve --mode development --hot"
+    "server": "webpack serve --mode development --hot",
+    "serve-no-lr": "webpack serve --node-env development --hot --env NOLR"
   }
 }
 ```
