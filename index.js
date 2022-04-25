@@ -29,13 +29,12 @@ module.exports = (env) => {
     }
 
     response = response.replace(/\/\/cdn.shopify.com\/s\/files\/[0-9]*\/[0-9]*\/[0-9]*\/[0-9]*\/[a-z]*\/[0-9]*\/assets\/([A-Za-z0-9_.]+)\?(v=)?[0-9]*/g, '/assets/$1');
-    response = response.replace('</head>', '<style>#preview-bar-iframe { display: none; }</style></head>');
 
     return response;
   };
 
   return {
-    open: `?preview_theme_id=${config.development.theme_id}`,
+    open: `?preview_theme_id=${config.development.theme_id}&pb=0`,
 
     devMiddleware: {
       publicPath: '/assets/',
