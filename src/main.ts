@@ -4,18 +4,12 @@ import { Options } from 'http-proxy-middleware';
 import getConfig from './util/get-config';
 import getTarget from './util/get-target';
 
-module.exports = (env: Record<string, string>) => {
+module.exports = () => {
   const config = getConfig();
   const target = getTarget(config);
 
   const manipulateResponse = (body: string) => {
     let response = body;
-
-    if (!env?.NOLR) {
-      const liveReload = fs.readFileSync(path.join(__dirname, 'livereload.js'));
-
-      response = response.replace('</head>', `<script>${liveReload}</script></head>`);
-    }
 
     response = response.replace(/\/\/[A-Za-z0-9-_.]+\/cdn\/shop\/t\/[0-9]+\/assets\/([A-Za-z0-9_.]+)\?v=[0-9]*/g, '/assets/$1');
 
