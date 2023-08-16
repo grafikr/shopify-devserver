@@ -1,7 +1,7 @@
 {
   "name": "@grafikr/shopify-devserver",
   "version": "1.2.1",
-  "main": "lib/index.js",
+  "main": "lib/main.js",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
