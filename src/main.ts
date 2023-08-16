@@ -8,14 +8,6 @@ module.exports = () => {
   const config = getConfig();
   const target = getTarget(config);
 
-  const manipulateResponse = (body: string) => {
-    let response = body;
-
-    response = response.replace(/\/\/[A-Za-z0-9-_.]+\/cdn\/shop\/t\/[0-9]+\/assets\/([A-Za-z0-9_.]+)\?v=[0-9]*/g, '/assets/$1');
-
-    return response;
-  };
-
   return {
     open: `?preview_theme_id=${config.development.theme_id}&pb=0`,
 
@@ -71,15 +63,17 @@ module.exports = () => {
             res.setHeader('location', redirect.toString());
           }
 
-          const body = new Array<any>();
+          const chunks = new Array<any>();
           proxyRes.on('data', (chunk) => {
-            body.push(chunk);
+            chunks.push(chunk);
           });
 
           proxyRes.on('end', () => {
-            res.end(manipulateResponse(
-              Buffer.concat(body).toString(),
-            ));
+            const body = Buffer.concat(chunks)
+              .toString()
+              .replace(/\/\/[A-Za-z0-9-_.]+\/cdn\/shop\/t\/[0-9]+\/assets\/([A-Za-z0-9_.]+)\?v=[0-9]*/g, '/assets/$1');
+
+            res.end(body);
           });
         },
       },
