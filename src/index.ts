@@ -1,14 +1,15 @@
-const path = require('path');
-const fs = require('fs');
-const YAML = require('yaml');
+import path from 'path';
+import fs from 'fs';
+import YAML from 'yaml';
+import {createProxyMiddleware, Options} from "http-proxy-middleware";
 
 module.exports = (env) => {
   let config = {
     development: {},
   };
+
   if (fs.existsSync('./config.yml')) {
-    config = fs.readFileSync('./config.yml', 'utf8');
-    config = YAML.parse(config);
+    config = YAML.parse(fs.readFileSync('./config.yml', 'utf8'));
   }
 
   let target;
@@ -19,7 +20,7 @@ module.exports = (env) => {
     target = new URL(`https://${config.development.store}`);
   }
 
-  const manipulateResponse = (body) => {
+  const manipulateResponse = (body: string) => {
     let response = body;
 
     if (!env?.NOLR) {
@@ -28,7 +29,7 @@ module.exports = (env) => {
       response = response.replace('</head>', `<script>${liveReload}</script></head>`);
     }
 
-    response = response.replace(/\/\/cdn.shopify.com\/s\/files\/[0-9]*\/[0-9]*\/[0-9]*\/[0-9]*\/[a-z]*\/[0-9]*\/assets\/([A-Za-z0-9_.]+)\?(v=)?[0-9]*/g, '/assets/$1');
+    response = response.replace(/\/\/[A-Za-z0-9-_.]+\/cdn\/shop\/t\/[0-9]+\/assets\/([A-Za-z0-9_.]+)\?v=[0-9]*/g, '/assets/$1');
 
     return response;
   };
@@ -46,34 +47,41 @@ module.exports = (env) => {
     },
 
     proxy: {
-      '**': {
+      '**': <Options>{
         target,
         secure: false,
         changeOrigin: true,
         selfHandleResponse: true,
+
         onProxyReq: (proxyRes) => {
           proxyRes.setHeader('accept-encoding', 'identity');
         },
+
         onProxyRes: (proxyRes, req, res) => {
-          if (req.path.startsWith('/assets/')) {
+          const REGEX = /\/cdn\/shop\/t\/[0-9]*\/assets\/([A-Za-z0-9_.]+)\?v=[0-9]*/;
+
+          if (REGEX.test(req.path)) {
             try {
-              const filePath = path.join(config.development.directory ?? 'src', req.path);
+              const filePath = path.join(config.development.directory ?? 'src', 'assets', path.basename(req.path));
               res.end(fs.readFileSync(filePath));
             } catch (e) {
-              res.statusCode = 404;
-              res.end();
+              // Do nothing
             }
-
-            return;
           }
 
-          res.statusCode = proxyRes.statusCode;
+          if (proxyRes.statusCode) {
+            res.statusCode = proxyRes.statusCode;
+          }
 
           Object.keys(proxyRes.headers).forEach((key) => {
-            res.setHeader(key, proxyRes.headers[key]);
+            const value = proxyRes.headers[key];
+
+            if (value) {
+              res.setHeader(key, value);
+            }
           });
 
-          if (proxyRes.statusCode >= 300 && proxyRes.statusCode < 400) {
+          if (proxyRes.headers.location) {
             const redirect = new URL(proxyRes.headers.location);
             redirect.protocol = 'http:';
             redirect.host = 'localhost:8080';

@@ -1,9 +1,9 @@
 // eslint-disable-next-line func-names
 (function () {
-  let previousContent = null;
+  let previousContent: string | null = null;
   let previousUrl = window.location.href;
 
-  const stripResponse = (response) => response.replace(/<script id="__st">(.)*?<\/script>/, '');
+  const stripResponse = (response: string) => response.replace(/<script id="__st">(.)*?<\/script>/, '');
 
   const sendRequest = async () => {
     try {
