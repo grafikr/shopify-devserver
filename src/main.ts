@@ -1,24 +1,12 @@
 import path from 'path';
 import fs from 'fs';
-import YAML from 'yaml';
-import { Options } from "http-proxy-middleware";
+import { Options } from 'http-proxy-middleware';
+import getConfig from './util/get-config';
+import getTarget from './util/get-target';
 
-module.exports = (env) => {
-  let config = {
-    development: {},
-  };
-
-  if (fs.existsSync('./config.yml')) {
-    config = YAML.parse(fs.readFileSync('./config.yml', 'utf8'));
-  }
-
-  let target;
-  try {
-    target = new URL(config.development.store);
-    target.protocol = 'https';
-  } catch (e) {
-    target = new URL(`https://${config.development.store}`);
-  }
+module.exports = (env: Record<string, string>) => {
+  const config = getConfig();
+  const target = getTarget(config);
 
   const manipulateResponse = (body: string) => {
     let response = body;
@@ -96,7 +84,7 @@ module.exports = (env) => {
 
           proxyRes.on('end', () => {
             res.end(manipulateResponse(
-              Buffer.concat(body).toString()
+              Buffer.concat(body).toString(),
             ));
           });
         },
