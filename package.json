@@ -23,8 +23,7 @@
     "url": "https://github.com/grafikr/shopify-devserver.git"
   },
   "files": [
-    "index.js",
-    "livereload.js"
+    "lib/*"
   ],
   "dependencies": {
     "http-proxy-middleware": "^2.0.0",
