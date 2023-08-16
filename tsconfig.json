@@ -1,5 +1,8 @@
 {
-  "include": ["*.*", "**/*.*"],
+  "include": [
+    ".*.js",
+    "./src/**/*.ts"
+  ],
   "compilerOptions": {
     "target": "es2016",
     "module": "commonjs",
