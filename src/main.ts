@@ -38,6 +38,8 @@ module.exports = () => {
             try {
               const filePath = path.join(config.development.directory ?? 'src', 'assets', path.basename(req.path));
               res.end(fs.readFileSync(filePath));
+
+              return;
             } catch (e) {
               // Do nothing
             }
