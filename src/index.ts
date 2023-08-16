@@ -89,14 +89,15 @@ module.exports = (env) => {
             res.setHeader('location', redirect.toString());
           }
 
-          let body = [];
+          const body = new Array<any>();
           proxyRes.on('data', (chunk) => {
             body.push(chunk);
           });
 
           proxyRes.on('end', () => {
-            body = Buffer.concat(body).toString();
-            res.end(manipulateResponse(body));
+            res.end(manipulateResponse(
+              Buffer.concat(body).toString()
+            ));
           });
         },
       },
