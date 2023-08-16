@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import YAML from 'yaml';
-import {createProxyMiddleware, Options} from "http-proxy-middleware";
+import { Options } from "http-proxy-middleware";
 
 module.exports = (env) => {
   let config = {
