@@ -20,5 +20,8 @@ module.exports = {
       },
     ],
     'no-unreachable': 'error',
+    'import/no-import-module-exports': ['error', {
+      exceptions: ['.lib/main.ts'],
+    }],
   },
 };
