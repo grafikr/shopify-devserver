@@ -1,92 +1,73 @@
 import path from 'path';
-import fs from 'fs';
-import { Options } from 'http-proxy-middleware';
+import { Configuration } from 'webpack-dev-server';
 import getConfig from './util/get-config';
 import getTarget from './util/get-target';
 
-module.exports = () => {
-  const config = getConfig();
-  const target = getTarget(config);
+const config = getConfig();
+const target = getTarget(config);
 
-  return {
-    open: `?preview_theme_id=${config.development.theme_id}&pb=0`,
+const devServer = <Configuration>{
+  open: `?preview_theme_id=${config.development.theme_id}&pb=0`,
 
-    devMiddleware: {
-      publicPath: '/assets/',
-    },
+  devMiddleware: {
+    publicPath: '/assets/',
+  },
 
-    static: {
-      directory: path.join(config.development.directory ?? 'src', 'assets/'),
-      watch: true,
-    },
+  static: {
+    directory: path.join(config.development.directory ?? 'src', 'assets/'),
+    watch: true,
+  },
 
-    proxy: {
-      '**': <Options>{
-        target,
-        secure: false,
-        changeOrigin: true,
-        selfHandleResponse: true,
+  proxy: {
+    '**': {
+      target,
+      secure: false,
+      changeOrigin: true,
+      selfHandleResponse: true,
 
-        onProxyReq: (proxyReq) => {
-          proxyReq.setHeader('accept-encoding', 'identity');
-        },
+      onProxyReq: (proxyReq) => {
+        proxyReq.setHeader('accept-encoding', 'identity');
+      },
 
-        onProxyRes: (proxyRes, req, res) => {
-          const REGEX =
-            /\/cdn\/shop\/t\/[0-9]*\/assets\/([A-Za-z0-9_.]+)\?v=[0-9]*/;
+      onProxyRes: (proxyRes, _req, res) => {
+        if (proxyRes.statusCode) {
+          res.statusCode = proxyRes.statusCode;
+        }
 
-          if (REGEX.test(req.path)) {
-            try {
-              const filePath = path.join(
-                config.development.directory ?? 'src',
-                'assets',
-                path.basename(req.path),
-              );
-              res.end(fs.readFileSync(filePath));
+        Object.keys(proxyRes.headers).forEach((key) => {
+          const value = proxyRes.headers[key];
 
-              return;
-            } catch (e) {
-              // Do nothing
-            }
+          if (value) {
+            res.setHeader(key, value);
           }
+        });
 
-          if (proxyRes.statusCode) {
-            res.statusCode = proxyRes.statusCode;
-          }
+        if (proxyRes.headers.location) {
+          const redirect = new URL(proxyRes.headers.location);
+          redirect.protocol = 'http:';
+          redirect.host = 'localhost:8080';
 
-          Object.keys(proxyRes.headers).forEach((key) => {
-            const value = proxyRes.headers[key];
+          res.setHeader('location', redirect.toString());
+        }
 
-            if (value) {
-              res.setHeader(key, value);
-            }
-          });
+        const chunks = new Array<any>();
+        proxyRes.on('data', (chunk) => {
+          chunks.push(chunk);
+        });
 
-          if (proxyRes.headers.location) {
-            const redirect = new URL(proxyRes.headers.location);
-            redirect.protocol = 'http:';
-            redirect.host = 'localhost:8080';
+        proxyRes.on('end', () => {
+          const body = Buffer.concat(chunks)
+            .toString()
+            .replace(
+              /\/\/[A-Za-z0-9-_.]+\/cdn\/shop\/t\/[0-9]+\/assets\/([A-Za-z0-9_.]+)\?v=[0-9]*/g,
+              '/assets/$1',
+            );
 
-            res.setHeader('location', redirect.toString());
-          }
-
-          const chunks = new Array<any>();
-          proxyRes.on('data', (chunk) => {
-            chunks.push(chunk);
-          });
-
-          proxyRes.on('end', () => {
-            const body = Buffer.concat(chunks)
-              .toString()
-              .replace(
-                /\/\/[A-Za-z0-9-_.]+\/cdn\/shop\/t\/[0-9]+\/assets\/([A-Za-z0-9_.]+)\?v=[0-9]*/g,
-                '/assets/$1',
-              );
-
-            res.end(body);
-          });
-        },
+          res.end(body);
+        });
       },
     },
-  };
-};
+  },
+}
+
+module.exports = devServer
