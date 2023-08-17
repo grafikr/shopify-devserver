@@ -19,9 +19,7 @@ module.exports = {
         ts: 'never',
       },
     ],
-    'import/no-import-module-exports': ['error', {
-      exceptions: ['./src/main.ts'],
-    }],
+    'import/no-import-module-exports': 'off',
     'no-unreachable': 'error',
   },
 };
