@@ -32,11 +32,16 @@ module.exports = () => {
         },
 
         onProxyRes: (proxyRes, req, res) => {
-          const REGEX = /\/cdn\/shop\/t\/[0-9]*\/assets\/([A-Za-z0-9_.]+)\?v=[0-9]*/;
+          const REGEX =
+            /\/cdn\/shop\/t\/[0-9]*\/assets\/([A-Za-z0-9_.]+)\?v=[0-9]*/;
 
           if (REGEX.test(req.path)) {
             try {
-              const filePath = path.join(config.development.directory ?? 'src', 'assets', path.basename(req.path));
+              const filePath = path.join(
+                config.development.directory ?? 'src',
+                'assets',
+                path.basename(req.path),
+              );
               res.end(fs.readFileSync(filePath));
 
               return;
@@ -73,7 +78,10 @@ module.exports = () => {
           proxyRes.on('end', () => {
             const body = Buffer.concat(chunks)
               .toString()
-              .replace(/\/\/[A-Za-z0-9-_.]+\/cdn\/shop\/t\/[0-9]+\/assets\/([A-Za-z0-9_.]+)\?v=[0-9]*/g, '/assets/$1');
+              .replace(
+                /\/\/[A-Za-z0-9-_.]+\/cdn\/shop\/t\/[0-9]+\/assets\/([A-Za-z0-9_.]+)\?v=[0-9]*/g,
+                '/assets/$1',
+              );
 
             res.end(body);
           });

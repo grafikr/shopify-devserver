@@ -3,9 +3,7 @@ module.exports = {
     es2022: true,
     node: true,
   },
-  extends: [
-    'airbnb-base', 'airbnb-typescript/base',
-  ],
+  extends: ['airbnb-base', 'airbnb-typescript/base', 'prettier'],
   parserOptions: {
     project: './tsconfig.json',
     ecmaVersion: 'latest',
