@@ -27,8 +27,8 @@ module.exports = () => {
         changeOrigin: true,
         selfHandleResponse: true,
 
-        onProxyReq: (proxyRes) => {
-          proxyRes.setHeader('accept-encoding', 'identity');
+        onProxyReq: (proxyReq) => {
+          proxyReq.setHeader('accept-encoding', 'identity');
         },
 
         onProxyRes: (proxyRes, req, res) => {
