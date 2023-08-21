@@ -7,7 +7,7 @@ const config = getConfig();
 const target = getTarget(config);
 
 const devServer = <Configuration>{
-  open: `?preview_theme_id=${config.development.theme_id}&pb=0`,
+  open: `?preview_theme_id=${config.theme_id}`,
 
   devMiddleware: {
     publicPath: '/assets/',

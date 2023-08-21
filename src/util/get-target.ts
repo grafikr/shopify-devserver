@@ -1,13 +1,10 @@
-import z from 'zod';
-import ConfigSchema from '../schema/config-schema';
-
-export default (config: z.infer<typeof ConfigSchema>) => {
+export default (config: { store: string }) => {
   try {
-    const target = new URL(config.development.store);
+    const target = new URL(config.store);
     target.protocol = 'https';
 
     return target;
   } catch (e) {
-    return new URL(`https://${config.development.store}`);
+    return new URL(`https://${config.store}`);
   }
 };

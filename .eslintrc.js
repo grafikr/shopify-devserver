@@ -18,6 +18,7 @@ module.exports = {
       },
     ],
     'import/no-import-module-exports': 'off',
+    'no-param-reassign': [2, { props: false }],
     'no-unreachable': 'error',
   },
 };
