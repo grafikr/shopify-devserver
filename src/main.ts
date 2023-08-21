@@ -1,5 +1,6 @@
 import path from 'path';
 import { Configuration } from 'webpack-dev-server';
+import url from 'url';
 import getConfig from './util/get-config';
 import getTarget from './util/get-target';
 
@@ -14,7 +15,7 @@ const devServer = <Configuration>{
   },
 
   static: {
-    directory: path.join(config.development.directory ?? 'src', 'assets/'),
+    directory: path.join(config.directory ?? 'src', 'assets/'),
     watch: true,
   },
 
@@ -24,9 +25,19 @@ const devServer = <Configuration>{
       secure: false,
       changeOrigin: true,
       selfHandleResponse: true,
+      xfwd: true,
 
       onProxyReq: (proxyReq) => {
-        proxyReq.setHeader('accept-encoding', 'identity');
+        // Set headers
+        proxyReq.setHeader('Accept-Encoding', 'none');
+        proxyReq.setHeader('User-Agent', 'DevServer');
+
+        // Set params
+        const parsedUrl = url.parse(proxyReq.path ?? '/', true);
+        const parsedUrlParams = new URLSearchParams(parsedUrl.search ?? '');
+        parsedUrlParams.set('_fd', '0');
+        parsedUrlParams.set('pb', '0');
+        parsedUrl.search = parsedUrlParams.toString();
       },
 
       onProxyRes: (proxyRes, _req, res) => {
@@ -44,6 +55,7 @@ const devServer = <Configuration>{
 
         if (proxyRes.headers.location) {
           const redirect = new URL(proxyRes.headers.location);
+
           redirect.protocol = 'http:';
           redirect.host = 'localhost:8080';
 
@@ -68,6 +80,6 @@ const devServer = <Configuration>{
       },
     },
   },
-}
+};
 
-module.exports = devServer
+module.exports = devServer;
