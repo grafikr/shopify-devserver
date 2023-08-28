@@ -33,8 +33,7 @@ For easy integration, you can add it as an action to your scripts in `package.js
 ```json
 {
   "scripts": {
-    "serve": "webpack serve --mode development --hot",
-    "serve-no-lr": "webpack serve --node-env development --hot --env NOLR"
+    "serve": "webpack serve --mode development --hot"
   }
 }
 ```

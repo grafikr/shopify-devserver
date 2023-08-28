@@ -1,0 +1,10 @@
+{
+  "include": [".*.js", "./src/**/*.ts"],
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "lib"
+  }
+}

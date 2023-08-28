@@ -1,16 +1,24 @@
 module.exports = {
   env: {
-    browser: true,
-    commonjs: true,
-    es2021: true,
+    es2022: true,
     node: true,
   },
-  extends: [
-    'airbnb-base',
-  ],
+  extends: ['airbnb-base', 'airbnb-typescript/base', 'prettier'],
   parserOptions: {
-    ecmaVersion: 13,
+    project: './tsconfig.json',
+    ecmaVersion: 'latest',
+    sourceType: 'module',
   },
   rules: {
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        ts: 'never',
+      },
+    ],
+    'import/no-import-module-exports': 'off',
+    'no-param-reassign': [2, { props: false }],
+    'no-unreachable': 'error',
   },
 };
