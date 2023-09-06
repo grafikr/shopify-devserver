@@ -9,5 +9,5 @@ export default () => {
     return ConfigSchema.parse(data).development;
   }
 
-  throw new Error('config.yml does not exists');
+  return null;
 };
