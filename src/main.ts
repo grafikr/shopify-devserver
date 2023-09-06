@@ -5,9 +5,9 @@ import getConfig from './util/get-config';
 import getTarget from './util/get-target';
 
 const config = getConfig();
-const target = getTarget(config);
+const target = config ? getTarget(config) : undefined;
 
-const devServer = <Configuration>{
+const devServer = config ? <Configuration>{
   open: `?preview_theme_id=${config.theme_id}`,
 
   devMiddleware: {
@@ -80,6 +80,6 @@ const devServer = <Configuration>{
       },
     },
   },
-};
+} : undefined;
 
 module.exports = devServer;
